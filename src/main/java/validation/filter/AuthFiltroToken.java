@@ -72,7 +72,7 @@ public class AuthFiltroToken extends OncePerRequestFilter {
         }
 
         filterChain.doFilter(request, response);
-    } // fin del metodo de filtradp
+    } // fin del metodo de filtrado
 
 
 } // fin de la clase

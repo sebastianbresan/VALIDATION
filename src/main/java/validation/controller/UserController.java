@@ -44,7 +44,7 @@ public class UserController {
         return "Pagina de inicio al publico";
     } // fin de la peticion
 
-    @PostMapping("/registrarse")
+    @PostMapping("/register")
     public ResponseEntity<?> registrarse(@RequestBody Usuario usuario){
         usuario.setPassword(passwordEncoder.encode(usuario.getPassword()));
 
@@ -57,7 +57,7 @@ public class UserController {
         return ResponseEntity.ok("Usuario registrado correctamente");
     } // fin de la pagina de registro
 
-    @PostMapping("/iniciar")
+    @PostMapping("/login")
     public ResponseEntity<?> iniciarSesion(@RequestBody AutenticacionLogin autLogin) throws Exception{
         //autLogin.getPassword();
         try {
