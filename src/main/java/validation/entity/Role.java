@@ -1,7 +1,9 @@
 package validation.entity;
 
+import com.sun.istack.NotNull;
+import validation._enum.RoleNombre;
+
 import javax.persistence.*;
-import java.io.Serializable;
 
 /**
  * Esta clase representa a la tabla de la BD llamada <b>roles</b>
@@ -10,43 +12,36 @@ import java.io.Serializable;
  */
 
 @Entity
-@Table(name = "roles")
-public class Role implements Serializable {
-    private static final long serialVersionUID = 1L;
-    /* ~ Propiedades
-    ==================================== */
+public class Role {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long idRole;
+    @GeneratedValue(strategy =  GenerationType.IDENTITY)
+    private Long id;
 
-    @Column(name = "nombre_role")
-    private String nombreRole;
-
-    private String descripcion;
-
-    /* ~ Metodos
-    ==================================== */
+    @NotNull
+    //Se indica que va a ser un Enum de tipo String
+    @Enumerated(EnumType.STRING)
+    private RoleNombre roleNombre;
 
     public Role() {
     }
 
-    public Long getIdRole() {
-        return idRole;
+    public Role(@NotNull RoleNombre roleNombre) {
+        this.roleNombre = roleNombre;
     }
 
-    public String getNombreRole() {
-        return nombreRole;
+    public Long getId() {
+        return id;
     }
 
-    public void setNombreRole(String nombreRole) {
-        this.nombreRole = nombreRole;
+    public void setId(Long id) {
+        this.id = id;
     }
 
-    public String getDescripcion() {
-        return descripcion;
+    public RoleNombre getRoleNombre() {
+        return roleNombre;
     }
 
-    public void setDescripcion(String descripcion) {
-        this.descripcion = descripcion;
+    public void setRoleNombre(RoleNombre roleNombre) {
+        this.roleNombre = roleNombre;
     }
 }

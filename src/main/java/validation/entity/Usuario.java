@@ -41,12 +41,12 @@ public class Usuario implements Serializable {
             joinColumns = {@JoinColumn(name = "id_usuario")},
             inverseJoinColumns = {@JoinColumn(name = "id_role")}
     )
-    private List<Role> roles;
+    private List<Role> role;
 
     /* ~ Metodos
     ==================================== */
     public Usuario(){
-        roles = new ArrayList<>();
+        role = new ArrayList<>();
     }
 
     public Long getIdUsuario() {
@@ -85,15 +85,15 @@ public class Usuario implements Serializable {
         this.activo = activo;
     }
 
-    public List<Role> getRoles() {
-        return roles;
+    public List<Role> getRole() {
+        return role;
     }
 
-    public void setRoles(List<Role> roles) {
-        this.roles = roles;
+    public void setRoles(List<Role> role) {
+        this.role = role;
     }
 
     public void agregarRoleALista(Role role){
-        this.roles.add(role);
+        this.role.add(role);
     }
 } // fin de la clase entidad

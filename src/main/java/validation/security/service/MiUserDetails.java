@@ -1,52 +1,63 @@
 package validation.security.service;
 
-import validation.entity.Role;
 import validation.entity.Usuario;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Esta clase proporciona la implementacion para establecer informacion del usuario.
  * Almacenando información del usuario que más tarde se encapsula en objetos de autenticación
  */
 public class MiUserDetails implements UserDetails {
-    /* ~ Propiedades
-    ==================================== */
-    private final String username;
-    private final String password;
-    private final boolean active;
-    private final List<SimpleGrantedAuthority> authorities;
 
-    /* ~ Metodos
-    ==================================== */
-    public MiUserDetails(Usuario usuario){
-        this.authorities = new ArrayList<>();
-        this.username = usuario.getUsername();
-        this.password = usuario.getPassword();
-        this.active = usuario.isActivo();
-        for(Role role : usuario.getRoles()){
-            authorities.add(new SimpleGrantedAuthority("ROLE_"+role.getNombreRole()));
-        } // fin del barrido
-    } // fin del constructor
+    private final String username;
+    private final String email;
+    private final String password;
+    // Variable que nos da la autorización (no confundir con autenticación)
+    // Coleccion de tipo generico que extendiende
+    // de GranthedAuthority de Spring security
+    private final Collection<? extends GrantedAuthority> authorities;
+
+    //Constructor
+    public MiUserDetails(String username, String email, String password, Collection<? extends GrantedAuthority> authorities) {
+        this.username = username;
+        this.email = email;
+        this.password = password;
+        this.authorities = authorities;
+    }
+
+    //Metodo que asigna los privilegios (autorización)
+    public static MiUserDetails build(Usuario usuario){
+        //Convertimos la clase Rol a la clase GrantedAuthority
+        List<GrantedAuthority> authorities =
+                usuario.getRole()
+                        .stream()
+                        .map(rol -> new SimpleGrantedAuthority(rol.getRoleNombre().name()))
+                        .collect(Collectors.toList());
+        return new MiUserDetails(usuario.getUsername(), usuario.getEmail(),
+                usuario.getPassword(), authorities);
+    }
+
+    //@Override los que tengan esta anotación
+    // significa que son metodos de UserDetails de SpringSecurity
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return this.authorities;
+        return authorities;
     }
 
     @Override
     public String getPassword() {
-        return this.password;
+        return password;
     }
 
     @Override
     public String getUsername() {
-        return this.username;
+        return username;
     }
 
     @Override
@@ -66,6 +77,11 @@ public class MiUserDetails implements UserDetails {
 
     @Override
     public boolean isEnabled() {
-        return this.active;
+        return true;
     }
-} // fin de la clase details
+
+    public String getEmail() {
+        return email;
+    }
+}
+// fin de la clase details

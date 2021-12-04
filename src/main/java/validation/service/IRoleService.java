@@ -1,7 +1,6 @@
 package validation.service;
 
 import validation.entity.Role;
-
 import java.util.List;
 
 /**

@@ -1,32 +1,44 @@
 package validation.service;
 
+import validation._enum.RoleNombre;
 import validation.entity.Role;
 import validation.repository.RoleRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Clase que implementa los metodos de la interfaz {@link IRoleService} del servicio para los
  * roles.
  */
+
 @Service
+@Transactional
 public class RoleService implements IRoleService{
 
-    /**
-     * Inyeccion para acceder a los metodos del repositorio
-     */
     @Autowired
-    private RoleRepository roleRepository;
+    RoleRepository roleRepository;
+
+    public Optional<Role> getByRolNombre(RoleNombre roleNombre){
+        return  roleRepository.findByRoleNombre(roleNombre);
+    }
+
+    public void save(Role role){
+        roleRepository.save(role);
+    }
 
     @Override
     public List<Role> obtenerTodosRoles() {
-        return roleRepository.findAll();
+        return null;
     }
 
     @Override
     public Role buscarRolePorId(Long idRole) {
-        return roleRepository.findById(idRole).orElse(null);
+        return null;
     }
-} // fin de la implementacion de la interfaz de servicios
+}
+ // fin de la implementacion de la interfaz de servicios
+
