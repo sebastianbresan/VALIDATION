@@ -21,6 +21,14 @@ public class UsuarioService implements IUsuarioService {
     @Autowired
     private UsuarioRepository usuarioRepository;
 
+    public Boolean existsByUsuario(String username){
+        return usuarioRepository.existsByUsername(username);
+    }
+
+    public Boolean existsByEmail(String email){
+        return usuarioRepository.existsByEmail(email);
+    }
+
     @Override
     @Transactional(readOnly = true)
     public List<Usuario> buscarTodosUsuarios() {

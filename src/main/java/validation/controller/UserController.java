@@ -1,21 +1,29 @@
 package validation.controller;
 
-import validation.entity.Role;
-import validation.entity.Usuario;
-import validation.payload.AutenticacionLogin;
-import validation.payload.AutenticacionResponse;
-import validation.security.service.MiUserDetailsService;
-import validation.security.utils.JwtUtil;
-import validation.service.IRoleService;
-import validation.service.IUsuarioService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import validation._enum.RoleNombre;
+import validation.entity.Role;
+import validation.entity.Usuario;
+import validation.payload.AutenticacionLogin;
+import validation.payload.AutenticacionResponse;
+import validation.security.service.MiUserDetailsService;
+import validation.security.utils.JwtUtil;
+import validation.service.RoleService;
+import validation.service.UsuarioService;
+import validation.util.Mensaje;
+
+import javax.validation.Valid;
+import java.util.HashSet;
+import java.util.Set;
 
 @RestController
 @CrossOrigin("*")
@@ -24,9 +32,9 @@ public class UserController {
     /* ~ Autowired
     ------------------------------------------------------------------------------- */
     @Autowired
-    private IRoleService roleService;
+    private RoleService roleService;
     @Autowired
-    private IUsuarioService usuarioService;
+    private UsuarioService usuarioService;
     @Autowired
     private BCryptPasswordEncoder passwordEncoder;
     @Autowired
@@ -36,36 +44,52 @@ public class UserController {
     @Autowired
     private JwtUtil jwtUtil;
 
-
     /* ~ Rutas publicas
     ------------------------------------------------------------------------------- */
     @GetMapping("/public")
-    public String homePublic(){
+    public String homePublic() {
         return "Pagina de inicio al publico";
     } // fin de la peticion
 
     @PostMapping("/register")
-    public ResponseEntity<?> registrarse(@RequestBody Usuario usuario){
-        usuario.setPassword(passwordEncoder.encode(usuario.getPassword()));
+    public ResponseEntity<?> nuevoUsuario(@Valid @RequestBody Usuario nuevoUsuario,
+                                          BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            return new ResponseEntity<>(new Mensaje("Campos mal o email invalido"), HttpStatus.BAD_REQUEST);
+        }
+        if (usuarioService.existsByUsuario(nuevoUsuario.getUsername())) {
+            return new ResponseEntity<>(new Mensaje("Ese nombre ya existe"), HttpStatus.BAD_REQUEST);
+        }
+        if (usuarioService.existsByEmail(nuevoUsuario.getEmail())) {
+            return new ResponseEntity<>(new Mensaje("Ese email ya existe"), HttpStatus.BAD_REQUEST);
+        }
 
-        // Asignar role de user
-        Role role = roleService.buscarRolePorId(3L);
-        usuario.agregarRoleALista(role);
-        usuario.setActivo(true);
+      /*   CREAMOS EL USUARIO Y ASIGAMOS QUE ROLES VA A TENER
+         AL SER UN NUEVO USUARIO SOLO LE VAMOS A ASIGAR EL ROL DE VALIDATE
+         LUEGO CUANDO SE VALIDEN LOS DATOS PASARA A TENER ROL DE USER*/
+
+        Usuario usuario = new Usuario(nuevoUsuario.getUsername(), nuevoUsuario.getEmail(), passwordEncoder.encode(nuevoUsuario.getPassword()));
+        Set<Role> roles = new HashSet<>();
+        // roles.add(roleService.getByRolNombre(RoleNombre.ROLE_USER).get());
+        // roles.add(roleService.getByRolNombre(RoleNombre.ROLE_ADMIN).get());
+        roles.add(roleService.getByRolNombre(RoleNombre.ROLE_VALIDATE).get());
+        usuario.setRole(roles);
+
         usuarioService.guardarUsuario(usuario);
 
-        return ResponseEntity.ok("Usuario registrado correctamente");
-    } // fin de la pagina de registro
+        return new ResponseEntity<>(new Mensaje("Usuario creado correctamente"), HttpStatus.CREATED);
+    }
+
 
     @PostMapping("/login")
-    public ResponseEntity<?> iniciarSesion(@RequestBody AutenticacionLogin autLogin) throws Exception{
+    public ResponseEntity<?> iniciarSesion(@RequestBody AutenticacionLogin autLogin) throws Exception {
         //autLogin.getPassword();
         try {
             authManager.authenticate(
                     new UsernamePasswordAuthenticationToken(autLogin.getUsername(), autLogin.getPassword())
             );
 
-        }catch (BadCredentialsException ex){
+        } catch (BadCredentialsException ex) {
             throw new Exception("Error en el username o contraseña " + ex.getMessage());
         } // fin de try~catch
 
@@ -77,11 +101,10 @@ public class UserController {
         return ResponseEntity.ok(new AutenticacionResponse(token));
     } // fin para iniciar sesion
 
-
     /* ~ Rutas privadas (requieren token)
     ------------------------------------------------------------------------------- */
     @GetMapping("/home")
-    public String userAuthenticated(){
+    public String userAuthenticated() {
         return "Welcome";
     }
 

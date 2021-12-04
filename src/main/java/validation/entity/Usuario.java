@@ -4,7 +4,9 @@ import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Esta clase representa a la tabla de la BD llamada <b>usuarios</b>
@@ -35,18 +37,25 @@ public class Usuario implements Serializable {
 
     private boolean activo;
 
-    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
-    @JoinTable(
-            name = "usuarios_roles",
-            joinColumns = {@JoinColumn(name = "id_usuario")},
-            inverseJoinColumns = {@JoinColumn(name = "id_role")}
-    )
-    private List<Role> role;
+    @NotNull
+    @ManyToMany
+    @JoinTable(name = "usuarios_roles", joinColumns = @JoinColumn(name = "id_usuario"),
+            inverseJoinColumns = @JoinColumn(name = "rol_id"))
+    private Set<Role> roles = new HashSet<>();
 
     /* ~ Metodos
     ==================================== */
-    public Usuario(){
-        role = new ArrayList<>();
+
+    public Usuario() {
+    }
+
+    //Constuctor sin Id ni Roles
+    public Usuario(@NotNull String username,
+                   @NotNull String email,
+                   @NotNull String password) {
+        this.username = username;
+        this.email = email;
+        this.password = password;
     }
 
     public Long getIdUsuario() {
@@ -85,15 +94,11 @@ public class Usuario implements Serializable {
         this.activo = activo;
     }
 
-    public List<Role> getRole() {
-        return role;
+    public Set<Role> getRole() {
+        return roles;
     }
 
-    public void setRoles(List<Role> role) {
-        this.role = role;
-    }
-
-    public void agregarRoleALista(Role role){
-        this.role.add(role);
+    public void setRole(Set<Role> role) {
+        this.roles = role;
     }
 } // fin de la clase entidad
