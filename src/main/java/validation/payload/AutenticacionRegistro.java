@@ -1,6 +1,8 @@
 package validation.payload;
 
 import java.io.Serializable;
+import java.util.HashSet;
+import java.util.Set;
 
 // Ver si sirve o uso el de usuarios
 public class AutenticacionRegistro implements Serializable {
@@ -20,6 +22,8 @@ public class AutenticacionRegistro implements Serializable {
         this.email = email;
         this.password = password;
     }
+
+    private Set<String> roles = new HashSet<>();
 
     public String getUsername() {
         return username;
@@ -43,5 +47,13 @@ public class AutenticacionRegistro implements Serializable {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public Set<String> getRoles() {
+        return roles;
+    }
+
+    public void setRoles(Set<String> roles) {
+        this.roles = roles;
     }
 }

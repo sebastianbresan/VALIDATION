@@ -21,7 +21,7 @@ public class MiUserDetailsService implements UserDetailsService {
      * Cargamos los datos obtenidos de la consulta hacia la BD y retornamos un objeto <b>UserDetails</b>
      * como nuestra clase <b>MiUserDetails</b> lo implementa la podemos usar, en su constructor le pasamos el
      * usuario de la BD para poblarlo.
-     * @param username nombre del usuario a buscar
+     * @param username nombre del usuario a find
      * @return UserDetails que poblara por medio de <b>Usuario</b>
      * @throws UsernameNotFoundException Si no encuentra el registro en la BD.
      */
@@ -30,7 +30,7 @@ public class MiUserDetailsService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        Usuario usuario = usuarioService.buscarUsuarioPorUsername(username);
+        Usuario usuario = usuarioService.findUsuarioPorUsername(username);
         return MiUserDetails.build(usuario);
     }
 

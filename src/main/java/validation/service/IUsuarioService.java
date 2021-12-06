@@ -18,7 +18,7 @@ public interface IUsuarioService {
      * el cual devuelve todos los registros de la tabla <b>usuarios</b>
      * @return List(Usuario)
      */
-    List<Usuario> buscarTodosUsuarios();
+    List<Usuario> findTodosUsuarios();
 
     /**
      * Envuelve al metodo <b>findById</b> de <b>JpaRepository</b>
@@ -26,23 +26,23 @@ public interface IUsuarioService {
      * @param idUsuario
      * @return Usuario
      */
-    Usuario buscarUsuarioPorId(Long idUsuario);
+    Usuario findUsuarioPorId(Long idUsuario);
 
     /**
      * Envuelve el metodo de la consulta personalizada en el repositorio {@link UsuarioRepository}
-     * <b>buscarUsuarioPorUsername</b> que retorna un registro de la BD por su username.
+     * <b>findUsuarioPorUsername</b> que retorna un registro de la BD por su username.
      * @param username
      * @return Usuario
      */
-    Usuario buscarUsuarioPorUsername(String username);
+    Usuario findUsuarioPorUsername(String username);
 
     /**
      * Envuelve el metodo de la consulta personalizada en el repositorio {@link UsuarioRepository}
-     * <b>buscarUsuarioPorEmail</b> que retorna un registro de la BD por su email.
+     * <b>findUsuarioPorEmail</b> que retorna un registro de la BD por su email.
      * @param email
      * @return Usuario
      */
-    Usuario buscarUsuarioPorEmail(String email);
+    Usuario findUsuarioPorEmail(String email);
 
     /**
      * Envuelve al metodo <b>save</b> de <b>JpaRepository</b>
@@ -57,5 +57,7 @@ public interface IUsuarioService {
      * @param idUsuario
      */
     void eliminarUsuarioPorId(Long idUsuario);
+
+    void eliminarUsuarioPorUsername(String username);
 
 } // fin de la interface de servicio

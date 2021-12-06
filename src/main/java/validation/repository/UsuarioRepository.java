@@ -14,7 +14,6 @@ import java.util.Optional;
 @Repository
 public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
 
-    Optional<Usuario> findByUsername(String username);
     boolean existsByUsername (String username);
     boolean existsByEmail (String email);
 
@@ -25,7 +24,7 @@ public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
      * @return Optional (usuario) o null
      */
     @Query("SELECT u FROM Usuario u WHERE u.username = ?1")
-    Optional<Usuario> buscarUsuarioPorUsername(String username);
+    Optional<Usuario> findUsuarioPorUsername(String username);
 
     /**
      * Genera una consulta personalizada que permita obtener el registro de un
@@ -34,6 +33,6 @@ public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
      * @return Optional
      */
     @Query("SELECT u FROM Usuario u WHERE u.email = ?1")
-    Optional<Usuario> buscarUsuarioPorEmail(String email);
+    Optional<Usuario> findUsuarioPorEmail(String email);
 
 } // fin de la clase

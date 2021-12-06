@@ -31,26 +31,26 @@ public class UsuarioService implements IUsuarioService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<Usuario> buscarTodosUsuarios() {
+    public List<Usuario> findTodosUsuarios() {
         return usuarioRepository.findAll();
     }
 
     @Override
     @Transactional(readOnly = true)
-    public Usuario buscarUsuarioPorId(Long idUsuario) {
+    public Usuario findUsuarioPorId(Long idUsuario) {
         return usuarioRepository.findById(idUsuario).orElse(null);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public Usuario buscarUsuarioPorUsername(String username) {
-        return usuarioRepository.buscarUsuarioPorUsername(username).orElse(null);
+    public Usuario findUsuarioPorUsername(String username) {
+        return usuarioRepository.findUsuarioPorUsername(username).orElse(null);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public Usuario buscarUsuarioPorEmail(String email) {
-        return usuarioRepository.buscarUsuarioPorEmail(email).orElse(null);
+    public Usuario findUsuarioPorEmail(String email) {
+        return usuarioRepository.findUsuarioPorEmail(email).orElse(null);
     }
 
     @Override
@@ -63,6 +63,12 @@ public class UsuarioService implements IUsuarioService {
     @Transactional()
     public void eliminarUsuarioPorId(Long idUsuario) {
         usuarioRepository.deleteById(idUsuario);
+    }
+
+    @Override
+    @Transactional()
+    public void eliminarUsuarioPorUsername(String username) {
+
     }
 
 } // fin de la implementacion de los servicios
