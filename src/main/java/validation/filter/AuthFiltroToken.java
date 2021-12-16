@@ -48,6 +48,7 @@ public class AuthFiltroToken extends OncePerRequestFilter {
             token = headerAuth.substring(7);
             // Buscamos el username del usuario en el token
             username = jwtUtil.extraerUsername(token);
+            System.out.println(token);
         }
 
         // Validamos los valores extraidos del token y el contexto de seguridad

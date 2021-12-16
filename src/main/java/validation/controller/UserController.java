@@ -1,7 +1,6 @@
 package validation.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -9,6 +8,7 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import validation._enum.RoleNombre;
@@ -21,7 +21,6 @@ import validation.security.service.MiUserDetailsService;
 import validation.security.utils.JwtUtil;
 import validation.service.RoleService;
 import validation.service.UsuarioService;
-import validation.util.Mensaje;
 
 import javax.validation.Valid;
 import java.util.HashSet;
@@ -66,10 +65,9 @@ public class UserController {
         return "Welcome";
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/api/admin")
-    public ResponseEntity<?> administrate(@RequestBody Usuario usuario){
-        return ResponseEntity.ok ("Eres Admin");
+    public ResponseEntity<?> administrate(@RequestBody Usuario usuario) {
+        return ResponseEntity.ok("Eres Admin");
     }
 
     @GetMapping("/api/users/find/all")
@@ -79,9 +77,8 @@ public class UserController {
 
     @GetMapping("/api/users/find/findbyusername/{username}")
     public ResponseEntity<?> findByUsername(@PathVariable() String username) {
-        return ResponseEntity.ok(usuarioRepository.findUsuarioPorUsername(username)) ;
+        return ResponseEntity.ok(usuarioRepository.findUsuarioPorUsername(username));
     }
-
 
     @PutMapping("/api/users/update/{username}")
     public ResponseEntity<?> updateUsuario(@PathVariable String username, @RequestBody Usuario usuario) {
@@ -92,17 +89,17 @@ public class UserController {
         return ResponseEntity.ok(usuario1);
     }
 
-    @PostMapping("/api/users/register")
+    @PostMapping("/api/register")
     public ResponseEntity<?> nuevoUsuario(@Valid @RequestBody Usuario nuevoUsuario,
                                           BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
-            return ResponseEntity.ok("Error al compilar el nuevo usuario, verifique los campos");
+            return ResponseEntity.badRequest().body("Error al compilar el nuevo usuario, verifique los campos");
         }
         if (usuarioService.existsByUsuario(nuevoUsuario.getUsername())) {
-            return ResponseEntity.ok("El nombre de usuario ya existe en nuestra base de datos");
+            return ResponseEntity.badRequest().body("El nombre de usuario ya existe en nuestra base de datos");
         }
         if (usuarioService.existsByEmail(nuevoUsuario.getEmail())) {
-            return ResponseEntity.ok("El email ya existe en nuestra base de datos");
+            return ResponseEntity.badRequest().body("El email ya existe en nuestra base de datos");
         }
 
       /*   CREAMOS EL USUARIO Y ASIGNAMOS QUE ROLES VA A TENER
@@ -111,39 +108,38 @@ public class UserController {
 
         Usuario usuario = new Usuario(nuevoUsuario.getUsername(), nuevoUsuario.getEmail(), passwordEncoder.encode(nuevoUsuario.getPassword()));
         Set<Role> roles = new HashSet<>();
-        roles.add(roleService.getByRolNombre(RoleNombre.ROLE_VALIDATE).orElse(null));
+        roles.add(roleService.getByRolNombre(RoleNombre.VALIDATE).orElse(null));
         usuario.setRole(roles);
         usuarioService.guardarUsuario(usuario);
-        return ResponseEntity.ok(usuarioRepository.findUsuarioPorUsername(usuario.getUsername()));
+        return ResponseEntity.ok("Usuario creado correctamente");
     }
-
 
     @PostMapping("/api/login")
     public ResponseEntity<?> iniciarSesion(@RequestBody AutenticacionLogin autLogin) throws Exception {
-        //autLogin.getPassword();
+
         try {
             authManager.authenticate(
                     new UsernamePasswordAuthenticationToken(autLogin.getUsername(), autLogin.getPassword())
             );
         } catch (BadCredentialsException ex) {
             throw new Exception("Error en el username o contraseña " + ex.getMessage());
-        } // fin de try~catch
-        // Obtenemos los datos del usuario de la BD para construir el token
+        }
         final UserDetails userDetails = miUserDetailsService.loadUserByUsername(autLogin.getUsername());
         final String token = jwtUtil.creatToken(userDetails);
-        // Regresamos el token
+
         return ResponseEntity.ok(new AutenticacionResponse(token));
-        }
 
-        @DeleteMapping("/api/users/delete/{username}")
-        public ResponseEntity<?> deleteByUsername(@PathVariable String username) {
-            usuarioService.eliminarUsuarioPorUsername(username);
-            return ResponseEntity.ok().build();
-        }
-
-        @DeleteMapping("/api/users/delete/all")
-        public ResponseEntity<?> deleteAll() {
-            usuarioRepository.deleteAll();
-            return ResponseEntity.accepted().build();
     }
-    } // fin para iniciar sesion
+
+    @DeleteMapping("/api/users/delete/{username}")
+    public ResponseEntity<?> deleteByUsername(@PathVariable String username) {
+        usuarioService.eliminarUsuarioPorUsername(username);
+        return ResponseEntity.ok().build();
+    }
+
+    @DeleteMapping("/api/users/delete/all")
+    public ResponseEntity<?> deleteAll() {
+        usuarioRepository.deleteAll();
+        return ResponseEntity.accepted().build();
+    }
+} // fin para iniciar sesion

@@ -1,5 +1,7 @@
 package validation.security;
 
+import validation._enum.RoleNombre;
+import validation.entity.Role;
 import validation.filter.AuthFiltroToken;
 import validation.security.service.MiUserDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -70,15 +72,14 @@ public class SecurityConfigurer extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http.csrf().disable()
-                .authorizeRequests()
-                .antMatchers("/api/register", "/api/login", "/api/public", "/api/users/**")
-                .permitAll()
-                .anyRequest()
-                .authenticated()
+        http
+                .cors()
                 .and()
-                .sessionManagement()
-                .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+                .csrf().disable()
+                .authorizeRequests()
+                .antMatchers("/api/admin/**").hasRole("ADMIN")
+                .antMatchers("/api/login*", "/api/register*").permitAll()
+                .anyRequest().hasAuthority("ADMIN");
 
         // Indicamos que usaremos un filtro
         http.addFilterBefore(authFiltroToken, UsernamePasswordAuthenticationFilter.class);

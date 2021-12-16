@@ -31,11 +31,13 @@ public class RoleService implements IRoleService{
     }
 
     @Override
+    @Transactional
     public List<Role> obtenerTodosRoles() {
         return null;
     }
 
     @Override
+    @Transactional
     public Role buscarRolePorId(Long idRole) {
         return null;
     }

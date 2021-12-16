@@ -27,18 +27,17 @@ public class CreateRolesAndAdmin implements CommandLineRunner {
     public void run(String... args) throws Exception {
 
         // CREAMOS LOS ROLES
-        Role roleAdmin = new Role(RoleNombre.ROLE_ADMIN);
-        Role roleUser = new Role(RoleNombre.ROLE_USER);
-        Role roleValidate = new Role(RoleNombre.ROLE_VALIDATE);
-        roleService.save(roleAdmin);
-        roleService.save(roleUser);
-        roleService.save(roleValidate);
+        Role Admin = new Role(RoleNombre.ADMIN);
+        Role User = new Role(RoleNombre.USER);
+        Role Validate = new Role(RoleNombre.VALIDATE);
+        roleService.save(Admin);
+        roleService.save(User);
+        roleService.save(Validate);
 
         // CREAMOS EL ADMIN
         Usuario usuario = new Usuario("admin","admin@admin.com", passwordEncoder.encode("admin") );
         Set<Role> roles = new HashSet<>();
-        roles.add(roleService.getByRolNombre(RoleNombre.ROLE_USER).get());
-        roles.add(roleService.getByRolNombre(RoleNombre.ROLE_ADMIN).get());
+        roles.add(roleService.getByRolNombre(RoleNombre.ADMIN).get());
         usuario.setRole(roles);
         usuarioService.guardarUsuario(usuario);
     }

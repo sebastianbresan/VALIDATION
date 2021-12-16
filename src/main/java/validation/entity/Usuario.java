@@ -38,7 +38,7 @@ public class Usuario implements Serializable {
     private boolean activo;
 
     @NotNull
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "usuarios_roles", joinColumns = @JoinColumn(name = "id_usuario"),
             inverseJoinColumns = @JoinColumn(name = "rol_id"))
     private Set<Role> roles = new HashSet<>();
